@@ -1,6 +1,7 @@
 const express = require("express");
 var bodyParser = require("body-parser");
 const { google } = require("googleapis");
+const dotenv = require("dotenv");
 dotenv.config({ path: "./config/.env" });
 const app = express();
 app.use(bodyParser.json());
@@ -144,7 +145,7 @@ app.post("/update/quantity/kitchen", async (req, res) => {
 	});
 	res.send(req.body);
 });
-app.listen(process.env.PORT || 5200, () => {
+app.listen(process.env.PORT || 5300, () => {
 	console.log("Server is running");
 });
 // http://localhost:8080/done?table=7 to delete
