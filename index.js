@@ -1,6 +1,7 @@
 const express = require("express");
 var bodyParser = require("body-parser");
 const { google } = require("googleapis");
+dotenv.config({ path: "./config/.env" });
 const app = express();
 app.use(bodyParser.json());
 
