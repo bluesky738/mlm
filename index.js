@@ -143,8 +143,8 @@ app.post("/update/quantity/kitchen", async (req, res) => {
 	});
 	res.send(req.body);
 });
-app.listen(8080, (req, res) => {
-	console.log("server started ");
+app.listen(process.env.PORT || 5200, () => {
+	console.log("Server is running");
 });
 // http://localhost:8080/done?table=7 to delete
 // http://localhost:8080/update/quantity?table=7&item=roti&quantity=4 to add or update the quantity and item
