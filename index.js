@@ -3,8 +3,10 @@ var bodyParser = require("body-parser");
 const { google } = require("googleapis");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config/.env" });
+const cors = require("cors");
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 let data = [];
 app.get("/", async (req, res) => {
