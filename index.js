@@ -18,21 +18,25 @@ app.get("/", async (req, res) => {
 	const googleSheets = google.sheets({ version: "v4", auth: client });
 	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
 	// Read rows from spreadsheet
-	const getRows = await googleSheets.spreadsheets.values.get({
-		spreadsheetId,
-		range: `${req.query.table}:${req.query.table}`,
-	});
-	data = getRows;
-	const peopleObjects = getRows.data.values[0];
-	const arr = [peopleObjects[0]];
-	for (let index = 1; index < peopleObjects.length; index++) {
-		arr.push({
-			item: peopleObjects[index],
-			quantity: peopleObjects[index + 1],
+	if (req.query.table != undefined) {
+		const getRows = await googleSheets.spreadsheets.values.get({
+			spreadsheetId,
+			range: `${req.query.table}:${req.query.table}`,
 		});
-		index++;
+		data = getRows;
+		const peopleObjects = getRows.data.values[0];
+		const arr = [peopleObjects[0]];
+		for (let index = 1; index < peopleObjects.length; index++) {
+			arr.push({
+				item: peopleObjects[index],
+				quantity: peopleObjects[index + 1],
+			});
+			index++;
+		}
+		res.send(arr);
+	} else {
+		res.send("please enter table number");
 	}
-	res.send(arr);
 });
 // update
 // update
@@ -55,7 +59,6 @@ app.get("/update/quantity", async (req, res) => {
 	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
 	// get
 	const getRows = await googleSheets.spreadsheets.values.get({
-		// auth,
 		spreadsheetId,
 		range: `sheet1!${req.query.table}:${req.query.table}`,
 	});
@@ -147,6 +150,48 @@ app.post("/update/quantity/kitchen", async (req, res) => {
 	});
 	res.send(req.body);
 });
+// get for items
+app.get("/menu", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	const getRows = await googleSheets.spreadsheets.values.get({
+		spreadsheetId,
+		range: `sheet3`,
+	});
+	category = [];
+	for (let index = 0; index < getRows.data.values.length; index++) {
+		category.push(getRows.data.values[index][0]);
+	}
+	new_arr = removeDuplicates(category);
+	arr = [];
+	for (let index = 0; index < new_arr.length; index++) {
+		for (let i = 0; i < getRows.data.values.length; i++) {
+			if (getRows.data.values[i][0] === new_arr[index]) {
+				arr[index] = { category: new_arr[index], item: [] };
+			}
+		}
+	}
+	for (let index = 0; index < new_arr.length; index++) {
+		for (let i = 0; i < getRows.data.values.length; i++) {
+			if (getRows.data.values[i][0] === arr[index].category) {
+				arr[index].item.push({
+					item: getRows.data.values[i][1],
+					price: getRows.data.values[i][2],
+					quantity: 0,
+				});
+			}
+		}
+	}
+	res.send(getRows.data.values);
+});
+function removeDuplicates(arr) {
+	return arr.filter((item, index) => arr.indexOf(item) === index);
+}
 app.listen(process.env.PORT || 5300, () => {
 	console.log("Server is running");
 });
