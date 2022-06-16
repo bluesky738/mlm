@@ -187,7 +187,7 @@ app.get("/menu", async (req, res) => {
 			}
 		}
 	}
-	res.send(getRows.data.values);
+	res.send(arr);
 });
 function removeDuplicates(arr) {
 	return arr.filter((item, index) => arr.indexOf(item) === index);
