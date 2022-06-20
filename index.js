@@ -202,7 +202,23 @@ app.get("/expenses", async (req, res) => {
 	let val = getRows.data.values.shift();
 	res.send(getRows.data.values);
 });
-
+// for getting coustmer history
+app.get("/coustmer/history", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// get
+	const getRows = await googleSheets.spreadsheets.values.get({
+		spreadsheetId,
+		range: `coustmer`,
+	});
+	let val = getRows.data.values.shift();
+	res.send(getRows.data.values);
+});
 // get for items
 // get for total amount
 app.get("/expenses/get", async (req, res) => {
