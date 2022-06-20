@@ -150,7 +150,97 @@ app.post("/update/quantity/kitchen", async (req, res) => {
 	});
 	res.send(req.body);
 });
+app.post("/coustmer", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// get
+	googleSheets.spreadsheets.values.append({
+		spreadsheetId,
+		range: `coustmer`,
+		valueInputOption: "USER_ENTERED",
+		resource: { values: req.body },
+	});
+	res.send(req.body);
+});
+// post for expenses
+app.post("/expenses/post", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// get
+	googleSheets.spreadsheets.values.append({
+		spreadsheetId,
+		range: `expenses`,
+		valueInputOption: "USER_ENTERED",
+		resource: { values: [req.body] },
+	});
+	res.send(req.body);
+});
+// get for expenses
+app.get("/expenses", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// get
+	const getRows = await googleSheets.spreadsheets.values.get({
+		spreadsheetId,
+		range: `expenses`,
+	});
+	let val = getRows.data.values.shift();
+	res.send(getRows.data.values);
+});
+
 // get for items
+// get for total amount
+app.get("/expenses/get", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// get
+	const getRows = await googleSheets.spreadsheets.values.get({
+		spreadsheetId,
+		range: `expenses`,
+	});
+	let val = getRows.data.values.shift();
+	var total = 0;
+	var online_total = 0;
+	var cash_total = 0;
+	var lenght = getRows.data.values.length;
+	let date_ob = new Date();
+	let year = date_ob.getFullYear();
+	let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+	let date = ("0" + date_ob.getDate()).slice(-2);
+	var dd = date + "/" + month + "/" + year;
+	for (i = 0; i < lenght; i++) {
+		if (getRows.data.values[i][0] == dd) {
+			total = total + parseInt(getRows.data.values[i][3]);
+			if (getRows.data.values[i][2] == "Cash") {
+				cash_total = cash_total + parseInt(getRows.data.values[i][3]);
+			} else {
+				online_total = online_total + parseInt(getRows.data.values[i][3]);
+			}
+		}
+	}
+	res.status(200).send(JSON.stringify([total, online_total, cash_total]));
+});
+
 app.get("/menu", async (req, res) => {
 	const auth = new google.auth.GoogleAuth({
 		keyFile: "credential.json",
@@ -161,7 +251,7 @@ app.get("/menu", async (req, res) => {
 	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
 	const getRows = await googleSheets.spreadsheets.values.get({
 		spreadsheetId,
-		range: `sheet3`,
+		range: `menu`,
 	});
 	category = [];
 	for (let index = 0; index < getRows.data.values.length; index++) {
@@ -192,6 +282,74 @@ app.get("/menu", async (req, res) => {
 function removeDuplicates(arr) {
 	return arr.filter((item, index) => arr.indexOf(item) === index);
 }
+//
+//
+//
+//
+//
+app.get("/coustmer/get", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// get
+	const getRows = await googleSheets.spreadsheets.values.get({
+		spreadsheetId,
+		range: `coustmer`,
+	});
+	let val = getRows.data.values.shift();
+	var total = 0;
+	var online_total = 0;
+	var cash_total = 0;
+	var lenght = getRows.data.values.length;
+	let date_ob = new Date();
+	let year = date_ob.getFullYear();
+	let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+	let date = ("0" + date_ob.getDate()).slice(-2);
+	var dd = date + "/" + month + "/" + year;
+	var today_coustmer = 0;
+	for (i = 0; i < lenght; i++) {
+		if (getRows.data.values[i][0] == dd) {
+			today_coustmer++;
+			total = total + parseInt(getRows.data.values[i][3]);
+			if (getRows.data.values[i][2] == "Cash") {
+				cash_total = cash_total + parseInt(getRows.data.values[i][3]);
+			} else {
+				online_total = online_total + parseInt(getRows.data.values[i][3]);
+			}
+		}
+	}
+	res
+		.status(200)
+		.send(JSON.stringify([total, online_total, cash_total, today_coustmer]));
+});
+app.get("/rate", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// get
+	const getRows = await googleSheets.spreadsheets.values.get({
+		spreadsheetId,
+		range: `menu!B:C`,
+	});
+	arr = [];
+	for (index = 0; index < getRows.data.values.length; index++) {
+		arr.push({
+			item: getRows.data.values[index][0],
+			price: getRows.data.values[index][1],
+		});
+	}
+
+	res.send(arr);
+});
+//
 app.listen(process.env.PORT || 5300, () => {
 	console.log("Server is running");
 });
