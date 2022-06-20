@@ -240,7 +240,7 @@ app.get("/expenses/get", async (req, res) => {
 	}
 	res.status(200).send(JSON.stringify([total, online_total, cash_total]));
 });
-
+// for getting menu item and rate and catageory
 app.get("/menu", async (req, res) => {
 	const auth = new google.auth.GoogleAuth({
 		keyFile: "credential.json",
@@ -287,6 +287,7 @@ function removeDuplicates(arr) {
 //
 //
 //
+// for geting coustmer information like today amout and etc
 app.get("/coustmer/get", async (req, res) => {
 	const auth = new google.auth.GoogleAuth({
 		keyFile: "credential.json",
@@ -326,6 +327,7 @@ app.get("/coustmer/get", async (req, res) => {
 		.status(200)
 		.send(JSON.stringify([total, online_total, cash_total, today_coustmer]));
 });
+//  for getting menu and rates of menu componenet
 app.get("/rate", async (req, res) => {
 	const auth = new google.auth.GoogleAuth({
 		keyFile: "credential.json",
@@ -348,6 +350,24 @@ app.get("/rate", async (req, res) => {
 	}
 
 	res.send(arr);
+});
+// for adding cousmter information
+app.post("/coustmer/post", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// get
+	googleSheets.spreadsheets.values.append({
+		spreadsheetId,
+		range: `coustmer`,
+		valueInputOption: "USER_ENTERED",
+		resource: { values: req.body },
+	});
+	res.send(req.body);
 });
 //
 app.listen(process.env.PORT || 5300, () => {
