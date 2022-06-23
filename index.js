@@ -246,11 +246,11 @@ app.get("/expenses/get", async (req, res) => {
 	var dd = date + "/" + month + "/" + year;
 	for (i = 0; i < lenght; i++) {
 		if (getRows.data.values[i][0] == dd) {
-			total = total + parseInt(getRows.data.values[i][3]);
+			total = total + parseInt(getRows.data.values[i][4]);
 			if (getRows.data.values[i][2] == "Cash") {
-				cash_total = cash_total + parseInt(getRows.data.values[i][3]);
+				cash_total = cash_total + parseInt(getRows.data.values[i][4]);
 			} else {
-				online_total = online_total + parseInt(getRows.data.values[i][3]);
+				online_total = online_total + parseInt(getRows.data.values[i][4]);
 			}
 		}
 	}
@@ -386,6 +386,30 @@ app.post("/coustmer/post", async (req, res) => {
 	res.send(req.body);
 });
 //
+// for sending sms
+app.post("/send-sms", async (req, res) => {
+	var unirest = require("unirest");
+
+	var req = unirest("POST", "https://www.fast2sms.com/dev/bulkV2");
+
+	req.headers({
+		authorization: "YOUR_API_KEY",
+	});
+
+	req.form({
+		sender_id: "DLT_SENDER_ID",
+		message: "YOUR_MESSAGE_ID",
+		variables_values: "",
+		route: "dlt",
+		numbers: req.body.number,
+	});
+
+	req.end(function (res) {
+		if (res.error) throw new Error(res.error);
+
+		console.log(res.body);
+	});
+});
 app.listen(process.env.PORT || 5300, () => {
 	console.log("Server is running");
 });
