@@ -247,10 +247,10 @@ app.get("/expenses/get", async (req, res) => {
 	for (i = 0; i < lenght; i++) {
 		if (getRows.data.values[i][0] == dd) {
 			total = total + parseInt(getRows.data.values[i][4]);
-			if (getRows.data.values[i][3] == "Cash") {
-				cash_total = cash_total + parseInt(getRows.data.values[i][4]);
+			if (getRows.data.values[i][2] == "Cash") {
+				cash_total = cash_total + parseInt(getRows.data.values[i][3]);
 			} else {
-				online_total = online_total + parseInt(getRows.data.values[i][4]);
+				online_total = online_total + parseInt(getRows.data.values[i][3]);
 			}
 		}
 	}
@@ -332,10 +332,10 @@ app.get("/coustmer/get", async (req, res) => {
 		if (getRows.data.values[i][0] == dd) {
 			today_coustmer++;
 			total = total + parseInt(getRows.data.values[i][3]);
-			if (getRows.data.values[i][2] == "Cash") {
-				cash_total = cash_total + parseInt(getRows.data.values[i][3]);
+			if (getRows.data.values[i][3] == "Cash") {
+				cash_total = cash_total + parseInt(getRows.data.values[i][4]);
 			} else {
-				online_total = online_total + parseInt(getRows.data.values[i][3]);
+				online_total = online_total + parseInt(getRows.data.values[i][4]);
 			}
 		}
 	}
