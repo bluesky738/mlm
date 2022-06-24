@@ -118,21 +118,6 @@ app.get("/done", async (req, res) => {
 //
 //
 //
-app.get("/quantity/kitchen", async (req, res) => {
-	const auth = new google.auth.GoogleAuth({
-		keyFile: "credential.json",
-		scopes: "https://www.googleapis.com/auth/spreadsheets",
-	});
-	const client = await auth.getClient();
-	const googleSheets = google.sheets({ version: "v4", auth: client });
-	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
-	const getRows = await googleSheets.spreadsheets.values.get({
-		spreadsheetId,
-		range: `sheet2`,
-	});
-	data = getRows.data.values;
-	res.send(data);
-});
 app.post("/update/quantity/kitchen", async (req, res) => {
 	const auth = new google.auth.GoogleAuth({
 		keyFile: "credential.json",
