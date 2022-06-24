@@ -231,7 +231,7 @@ app.get("/expenses/get", async (req, res) => {
 	var dd = date + "/" + month + "/" + year;
 	for (i = 0; i < lenght; i++) {
 		if (getRows.data.values[i][0] == dd) {
-			total = total + parseInt(getRows.data.values[i][4]);
+			total = total + parseInt(getRows.data.values[i][3]);
 			if (getRows.data.values[i][2] == "Cash") {
 				cash_total = cash_total + parseInt(getRows.data.values[i][3]);
 			} else {
