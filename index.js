@@ -99,19 +99,19 @@ app.get("/done", async (req, res) => {
 		range: `${req.query.table}:${req.query.table}`,
 	});
 	data = getRows.data.values;
-	data[0].length = 1;
-	googleSheets.spreadsheets.values.clear({
+	dd = [data[0][0]];
+	await googleSheets.spreadsheets.values.clear({
 		spreadsheetId,
 		range: `${req.query.table}:${req.query.table}`,
 	});
 	// add table
-	googleSheets.spreadsheets.values.update({
+	await googleSheets.spreadsheets.values.update({
 		spreadsheetId,
 		range: `${req.query.table}:${req.query.table}`,
 		valueInputOption: "USER_ENTERED",
-		resource: { values: data },
+		resource: { values: [dd] },
 	});
-	res.send(data);
+	res.send("done");
 });
 
 //
