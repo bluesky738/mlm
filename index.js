@@ -38,6 +38,26 @@ app.get("/", async (req, res) => {
 		res.send("please enter table number");
 	}
 });
+app.get("/table", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// Read rows from spreadsheet
+	if (req.query.table != undefined) {
+		const getRows = await googleSheets.spreadsheets.values.get({
+			spreadsheetId,
+			range: `${req.query.table}:${req.query.table}`,
+		});
+		data = getRows;
+		res.send(data.data.values);
+	} else {
+		res.send("please enter table number");
+	}
+});
 // update
 // update
 // update
@@ -118,23 +138,23 @@ app.get("/done", async (req, res) => {
 //
 //
 //
-app.post("/update/quantity/kitchen", async (req, res) => {
-	const auth = new google.auth.GoogleAuth({
-		keyFile: "credential.json",
-		scopes: "https://www.googleapis.com/auth/spreadsheets",
-	});
-	const client = await auth.getClient();
-	const googleSheets = google.sheets({ version: "v4", auth: client });
-	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
-	// get
-	googleSheets.spreadsheets.values.update({
-		spreadsheetId,
-		range: `sheet2`,
-		valueInputOption: "USER_ENTERED",
-		resource: { values: req.body },
-	});
-	res.send(req.body);
-});
+// app.post("/update/quantity/kitchen", async (req, res) => {
+// 	const auth = new google.auth.GoogleAuth({
+// 		keyFile: "credential.json",
+// 		scopes: "https://www.googleapis.com/auth/spreadsheets",
+// 	});
+// 	const client = await auth.getClient();
+// 	const googleSheets = google.sheets({ version: "v4", auth: client });
+// 	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+// 	// get
+// 	googleSheets.spreadsheets.values.update({
+// 		spreadsheetId,
+// 		range: `sheet2`,
+// 		valueInputOption: "USER_ENTERED",
+// 		resource: { values: req.body },
+// 	});
+// 	res.send(req.body);
+// });
 app.post("/coustmer", async (req, res) => {
 	const auth = new google.auth.GoogleAuth({
 		keyFile: "credential.json",
@@ -365,6 +385,27 @@ app.post("/coustmer/post", async (req, res) => {
 	googleSheets.spreadsheets.values.append({
 		spreadsheetId,
 		range: `coustmer`,
+		valueInputOption: "USER_ENTERED",
+		resource: { values: req.body },
+	});
+	res.send(req.body);
+});
+app.post("/table", async (req, res) => {
+	const auth = new google.auth.GoogleAuth({
+		keyFile: "credential.json",
+		scopes: "https://www.googleapis.com/auth/spreadsheets",
+	});
+	const client = await auth.getClient();
+	const googleSheets = google.sheets({ version: "v4", auth: client });
+	const spreadsheetId = "1UQe7uy4tDrf_xOSJMODalqdFW7verWjK_IeHLRpOBHY";
+	// get
+	await googleSheets.spreadsheets.values.clear({
+		spreadsheetId,
+		range: `${req.query.table}:${req.query.table}`,
+	});
+	googleSheets.spreadsheets.values.update({
+		spreadsheetId,
+		range: `${req.query.table}:${req.query.table}`,
 		valueInputOption: "USER_ENTERED",
 		resource: { values: req.body },
 	});
